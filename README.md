@@ -25,7 +25,7 @@ This report delves into the insights gleaned from your personal finance dashboar
 
 ### Data Sourcing
 i have downloaded xls file then i extracted into a powerbi for cleaning, analysis and visualization
-it contains 3 sheets/tables
+it contains - 3 sheets/tables
 
 - main data>> 300 rows and 7 columns
 - income goals>> 12 rows and 2 columns
@@ -40,6 +40,40 @@ it contains 3 sheets/tables
 - Step 4 : Promote headers and change the data type
 - Step 5: Close and apply 
 ### Data Modelling
+snap of data model structure
+![Modelling data](https://github.com/AdityaaPujari/Personal-Finance-Dashboard/assets/131788257/41c601b4-d9ef-43eb-af49-15265dd12a77)
+
+### Dax Created
+- Total Income = CALCULATE([Total Amount],FILTER('Main Data','Main Data'[Main Type]="income"))
+- Total Expences = CALCULATE([Total Amount],FILTER('Main Data','Main Data'[Main Type]="Expenses"))
+- Total Amount = SUM('Main Data'[Amount])
+- Side Income = CALCULATE([Total Income],FILTER('Main Data','Main Data'[Category]="Side Income"))
+- Records = COUNTROWS('Main Data')
+- Personal = CALCULATE([Total Amount],FILTER('Main Data','Main Data'[Category]="Personal"))
+- Main Income = CALCULATE([Total Income],FILTER('Main Data','Main Data'[Category]="Main Income"))
+- Housing = CALCULATE([Total Amount],FILTER('Main Data','Main Data'[Category]="Housing"))
+- Gauge Caption = 
+  VAR Variance_Goal=[Total Income]-[Total Income Target]
+  VAR Month_Selected=SELECTEDVALUE('Main Data'[Month])
+  RETURN
+  IF(Variance_Goal>1,"Total Income is greater than Targeted income"&"
+  "&FORMAT(Variance_Goal,"$#,##"),"You could no met your target in "&"
+  "&Month_Selected&" ."&FORMAT(Variance_Goal,"$#,##")&"Lower than target")
+- Available Balance = [Total Amount]-[Total Expences]
+- Alert = 
+  VAR No_late_pay=CALCULATE([Records],FILTER('Main Data','Main Data'[Status]="unpaid"))
+  VAR late_pay_Amount=CALCULATE([Total Amount],FILTER('Main Data','Main Data'[Status]="unpaid"))
+
+  // late_pay_Amount
+  var selected_month=SELECTEDVALUE('Main Data'[Month])
+  var Conjunction_in="in"
+  var select_in=IF(selected_month=BLANK(),"",Conjunction_in)
+  RETURN
+  IF(No_late_pay>1,"You have" & No_late_pay&"debt due to be paid, worth"&FORMAT(late_pay_Amount,"$#,##")&" "& select_in&""& selected_month,"No unpaid debt in "&selected_month
+- Unpaid Debt = CALCULATE([Total Amount],'Main Data'[Status]="unpaid")
+
+### Analysis and Visualization
+
 
 ### Steps followed 
 
